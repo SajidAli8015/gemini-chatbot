@@ -69,13 +69,6 @@ LANGSMITH_API_KEY = "your_langsmith_key"
 streamlit run streamlit_chat.py
 ```
 
----
-
-## 📷 Screenshots
-
-> *Add screenshots here if needed.*
-
----
 
 ## 📌 Future Improvements
 

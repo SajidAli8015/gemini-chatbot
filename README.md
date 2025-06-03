@@ -6,12 +6,13 @@ A lightweight Streamlit chatbot interface powered by Google Gemini 2.0 Flash usi
 
 ## 🚀 Features
 
-* 📌 Persona Selector (Friendly Assistant, Formal Expert, etc.)
-* 🌐 Language Selector (English, Urdu, etc.)
-* 💬 Continuous streaming conversation (like ChatGPT)
-* 🧠 Memory-enabled via LangGraph threading
-* ♻️ Reset conversation session
-* 📥 Download chat history to `.txt`
+- 📌 **Persona Selector** (Friendly Assistant, Formal Expert, Tech Support)
+- 🌐 **Language Selector** (English, Urdu)
+- 💬 **Streaming Chat Interface** (like ChatGPT)
+- 🧠 **LangGraph Memory Support** with unique conversation IDs
+- 🧾 **Multi-Chat Sidebar**: Supports multiple simultaneous conversations
+- ♻️ **Reset Conversation** with new UUID
+- 📥 **Floating Download Button** for full conversation history (in `.txt` format)
 
 ---
 

@@ -6,13 +6,16 @@ A lightweight Streamlit chatbot interface powered by Google Gemini 2.0 Flash usi
 
 ## 🚀 Features
 
+- 🧠 **Retrieval-Augmented Generation (RAG)** from uploaded PDF documents
+- 📄 **Document Upload & Embedding** with FAISS vector store
+- ✅ **Session-Specific PDF Activation**: Once enabled, RAG context is locked for that chat
 - 📌 **Persona Selector** (Friendly Assistant, Formal Expert, Tech Support)
 - 🌐 **Language Selector** (English, Urdu)
-- 💬 **Streaming Chat Interface** (like ChatGPT)
-- 🧠 **LangGraph Memory Support** with unique conversation IDs
-- 🧾 **Multi-Chat Sidebar**: Supports multiple simultaneous conversations
-- ♻️ **Reset Conversation** with new UUID
-- 📥 **Floating Download Button** for full conversation history (in `.txt` format)
+- 💬 **Streaming Chat Interface** with memory (like ChatGPT)
+- 🧾 **Multi-Chat Sidebar**: Supports multiple parallel conversations
+- ♻️ **Reset Conversation** with unique chat ID
+- 📥 **Download Conversation** (.txt format)
+- 🔁 **Smart PDF Toggle Logic** (upload once, activate for a session)
 
 ---
 
@@ -68,29 +71,44 @@ LANGSMITH_API_KEY = "your_langsmith_key"
 
 ```bash
 streamlit run streamlit_chat.py
+
 ```
 
+## 📚 RAG Workflow
 
-## 📌 Future Improvements
-
-* [ ] 🌐 **Deploy on HuggingFace Spaces, Render, or Vercel** for public access
-* [ ] 📚 **RAG Integration**: Augment chatbot with custom document retrieval
-* [ ] 🧠 **Session Persistence** across reloads
-* [ ] 📊 **Analytics Dashboard** (user count, sessions)
-* [ ] 🗂️ **Admin Panel for managing personas & responses**
+- Upload a PDF in the sidebar.  
+- Check the **"Use PDF for context"** checkbox (once per chat) to activate RAG.  
+- Ask document-specific questions — the chatbot retrieves relevant chunks using FAISS.  
+- For generic questions, uncheck the box (or open a new chat).  
+- PDF state is stored per session, and chat context persists until reset.  
 
 ---
 
+## ✅ Future Enhancements
 
+- 🌐 **Deploy** to HuggingFace / Render / Vercel  
+- 🧠 **Use memory / database** for storing chat history  
+- 🖼️ **Multimodal file support** (images, docs)  
+- 🔒 **User authentication / login system**  
+- 📊 **Admin dashboard** for usage & file analytics  
+- ⚙️ **Function-calling capabilities** for real tools  
 
+---
 
 ## 🙋‍♂️ Acknowledgements
 
-* [LangGraph](https://github.com/langchain-ai/langgraph)
-* [LangChain](https://www.langchain.com/)
-* [Streamlit](https://streamlit.io/)
-* [Gemini by Google](https://ai.google.dev/)
+- **LangGraph**  
+- **LangChain**  
+- **FAISS** by Meta  
+- **Streamlit**  
+- **Google Generative AI**  
 
 ---
+
+## 🧑‍💻 Maintainer
+
+**Sajid Ali**  
+*Data Scientist | GitHub*
+
 
 

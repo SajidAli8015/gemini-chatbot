@@ -7,5 +7,9 @@ langchain-google-genai
 uuid
 base64
 typing_extensions
+PyPDF2
+langchain
+langchain-community
+faiss-cpu
 
 

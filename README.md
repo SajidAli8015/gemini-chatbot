@@ -8,14 +8,12 @@ A lightweight Streamlit chatbot interface powered by Google Gemini 2.0 Flash usi
 
 - 🧠 **Retrieval-Augmented Generation (RAG)** from uploaded PDF documents
 - 📄 **Document Upload & Embedding** with FAISS vector store
-- ✅ **Session-Specific PDF Activation**: Once enabled, RAG context is locked for that chat
 - 📌 **Persona Selector** (Friendly Assistant, Formal Expert, Tech Support)
 - 🌐 **Language Selector** (English, Urdu)
 - 💬 **Streaming Chat Interface** with memory (like ChatGPT)
 - 🧾 **Multi-Chat Sidebar**: Supports multiple parallel conversations
 - ♻️ **Reset Conversation** with unique chat ID
 - 📥 **Download Conversation** (.txt format)
-- 🔁 **Smart PDF Toggle Logic** (upload once, activate for a session)
 
 ---
 

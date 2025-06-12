@@ -18,7 +18,7 @@ os.environ["LANGSMITH_API_KEY"] = st.secrets["LANGSMITH_API_KEY"]
 # === 2. Streamlit UI Setup ===
 st.set_page_config(page_title="My Gemini Chatbot", layout="wide")
 st.markdown("""
-    <h1 style='text-align: center;'>🤖 Gemini 2.0 Chatbot with PDF & Memory</h1>
+    <h1 style='text-align: center;'>🤖 Gemini 2.0: RAG-Powered Chatbot</h1>
     <p style='text-align: center;'>Hi, how can I help you today?</p>
 """, unsafe_allow_html=True)
 
@@ -33,7 +33,8 @@ if "active_chat_id" not in st.session_state:
         "title": "New Chat",
         "history": [],
         "use_doc_context": False,
-        "vectorstore": None
+        "vectorstore": None,
+        "last_file_name": None
     }
 
 chat_id = st.session_state.active_chat_id
@@ -42,7 +43,6 @@ chat_data = st.session_state.all_chats[chat_id]
 # === 4. Sidebar: Multi-Chat Support ===
 st.sidebar.header("🗂️ Chat History")
 
-# Sidebar selector
 selected = st.sidebar.radio(
     "Select Chat",
     options=list(st.session_state.all_chats.keys()),
@@ -50,47 +50,47 @@ selected = st.sidebar.radio(
     index=list(st.session_state.all_chats.keys()).index(chat_id)
 )
 
-# Switch chat
 if selected != chat_id:
     st.session_state.active_chat_id = selected
     st.rerun()
 
-# New chat button
 if st.sidebar.button("➕ New Chat"):
     new_id = str(uuid.uuid4())
     st.session_state.all_chats[new_id] = {
         "title": "New Chat",
         "history": [],
         "use_doc_context": False,
-        "vectorstore": None
+        "vectorstore": None,
+        "last_file_name": None
     }
     st.session_state.active_chat_id = new_id
+    st.session_state.pop("uploaded_file", None)
     st.rerun()
 
 # === 5. PDF Upload & Embedding (Sidebar) ===
 st.sidebar.subheader("📄 Upload a PDF")
 uploaded_file = st.sidebar.file_uploader("Choose a PDF file", type="pdf")
 
-if uploaded_file and not chat_data["use_doc_context"]:
-    reader = PdfReader(uploaded_file)
-    raw_text = "\n".join([page.extract_text() or "" for page in reader.pages])
+if uploaded_file:
+    current_file_name = uploaded_file.name
 
-    # Split and embed
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    chunks = splitter.split_text(raw_text)
+    if chat_data.get("last_file_name") != current_file_name:
+        reader = PdfReader(uploaded_file)
+        raw_text = "\n".join([page.extract_text() or "" for page in reader.pages])
 
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-    vectorstore = FAISS.from_texts(chunks, embedding=embeddings)
+        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        chunks = splitter.split_text(raw_text)
 
-    # Save to chat session (immutable now)
-    chat_data["use_doc_context"] = True
-    chat_data["vectorstore"] = vectorstore
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+        vectorstore = FAISS.from_texts(chunks, embedding=embeddings)
 
-    st.sidebar.success("✅ PDF uploaded & embedded")
+        chat_data["use_doc_context"] = True
+        chat_data["vectorstore"] = vectorstore
+        chat_data["last_file_name"] = current_file_name
 
-# Lock the checkbox if already activated
-if chat_data["use_doc_context"]:
-    st.sidebar.checkbox("PDF loaded for context (locked)", value=True, disabled=True)
+        st.sidebar.success("✅ PDF uploaded & embedded")
+    else:
+        st.sidebar.info("ℹ️ Same PDF already loaded. Skipping embedding.")
 
 # === 6. Persona & Language ===
 persona = st.selectbox("Choose a persona:", ["Friendly Assistant", "Formal Expert", "Tech Support"], key="persona")

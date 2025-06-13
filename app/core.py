@@ -11,7 +11,7 @@ from langchain_core.messages import trim_messages
 from langgraph.checkpoint.memory import MemorySaver
 
 # === 1. Environment Setup ===
-os.environ["LANGSMITH_TRACING"] = "true"
+#os.environ["LANGSMITH_TRACING"] = "true"
 os.environ["LANGCHAIN_PROJECT"] = "my-gemini-rag-bot"
 
 # === 2. Initialize Model ===
@@ -31,11 +31,33 @@ trimmer = trim_messages(
 )
 
 # === 4. Prompt Template with optional doc context ===
+
 prompt_template = ChatPromptTemplate.from_messages([
-    ("system", "You are a {persona} who helps users. Respond in {language}."),
-    ("system", "Here is some additional context from documents, if any:\n\n{retrieved_context}"),
-    MessagesPlaceholder(variable_name="messages"),
+    ("system", """
+You are a highly intelligent, helpful, and detailed {persona}.
+Your role is to assist users in {language} by answering their questions thoroughly, clearly, and accurately.
+
+If any context from documents is provided, you must:
+- Carefully analyze the information.
+- Extract all relevant points needed to answer the user's question completely.
+- Prioritize factual correctness based on the document.
+- Provide complete responses (not too short).
+- Use bullet points or numbered lists for clarity when applicable.
+- Do NOT simply repeat information or say “based on the document” unless asked.
+
+Even if the context is short, give the best possible answer using your knowledge and the context available.
+
+-------------------------------
+📄 Document Context:
+{retrieved_context}
+-------------------------------
+"""),
+    MessagesPlaceholder(variable_name="messages")
 ])
+
+
+
+
 
 # === 5. State Definition ===
 class State(TypedDict):

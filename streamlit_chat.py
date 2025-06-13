@@ -1,4 +1,4 @@
-# ✅ streamlit_chat.py (UPDATED)
+# ✅ streamlit_chat.py (UPDATED with Streaming + Markdown Fix)
 
 import uuid
 import os
@@ -8,8 +8,9 @@ import base64
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 import streamlit.components.v1 as components
+import time
 
 # === 1. Set API Keys ===
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
@@ -41,7 +42,7 @@ chat_id = st.session_state.active_chat_id
 chat_data = st.session_state.all_chats[chat_id]
 
 # === 4. Sidebar: Multi-Chat Support ===
-st.sidebar.header("🗂️ Chat History")
+st.sidebar.header("📂 Chat History")
 
 selected = st.sidebar.radio(
     "Select Chat",
@@ -78,7 +79,7 @@ if uploaded_file:
         reader = PdfReader(uploaded_file)
         raw_text = "\n".join([page.extract_text() or "" for page in reader.pages])
 
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        splitter = RecursiveCharacterTextSplitter(chunk_size=750, chunk_overlap=100)
         chunks = splitter.split_text(raw_text)
 
         embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
@@ -122,13 +123,24 @@ if user_input:
         import sys
 
         buffer = StringIO()
+        response_placeholder = st.empty()
+        response_placeholder.markdown("*Analyzing...*")
+
         sys.stdout = buffer
         stream_chat(user_input, language, persona, thread_id=chat_id)
         sys.stdout = sys.__stdout__
-        response = buffer.getvalue()
 
-        st.markdown(response)
-        chat_data["history"].append(("ai", response))
+        full_response = buffer.getvalue()
+        response_placeholder.empty()
+
+        displayed = ""
+        for word in full_response.split(" "):
+            displayed += word + " "
+            response_placeholder.markdown(displayed + "▌")
+            time.sleep(0.02)
+
+        response_placeholder.markdown(displayed.strip())
+        chat_data["history"].append(("ai", displayed.strip()))
 
 # === 10. Floating Download Button ===
 conversation_text = "\n\n".join([

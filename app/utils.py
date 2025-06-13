@@ -26,7 +26,9 @@ def stream_chat(
 
     if use_doc_context and vectorstore:
         try:
-            docs = vectorstore.similarity_search(query, k=3)
+            
+            #docs = vectorstore.max_marginal_relevance_search(query, k=5, fetch_k=20)
+            docs = vectorstore.similarity_search(query, k=5)
             retrieved = "\n\n".join([doc.page_content for doc in docs])
             input_data["retrieved_context"] = retrieved
         except Exception as e:

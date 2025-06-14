@@ -1,8 +1,14 @@
 # 🤖 Gemini 2.0: RAG-Powered Chatbot
 
+A dynamic, multi-chat **Streamlit chatbot** powered by **Google Gemini 2.0 Flash**, enhanced with **RAG (Retrieval-Augmented Generation)** using **LangGraph**, **LangChain**, and **FAISS**.
+
+---
+
 🚀 [Live App](https://gemini-chatbot-ah6paoheh5n4z3k96zgudu.streamlit.app)
 
-A dynamic, multi-chat **Streamlit chatbot** powered by **Google Gemini 2.0 Flash**, enhanced with **RAG (Retrieval-Augmented Generation)** using **LangGraph**, **LangChain**, and **FAISS**.
+## 🖼️ Demo Screenshot
+
+![Gemini Chatbot Demo](https://github.com/SajidAli8015/gemini-chatbot/blob/main/assets/chat-demo.PNG?raw=true)
 
 ---
 
@@ -19,6 +25,8 @@ A dynamic, multi-chat **Streamlit chatbot** powered by **Google Gemini 2.0 Flash
 - 📌 Smart handling of file re-upload & persistence per chat session
 
 ---
+
+
 
 ## 📁 Project Structure
 

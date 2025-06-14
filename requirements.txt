@@ -4,12 +4,6 @@ langgraph
 google-generativeai
 typing_extensions
 langchain-google-genai
-uuid
-base64
-typing_extensions
 PyPDF2
-langchain
 langchain-community
 faiss-cpu
-
-

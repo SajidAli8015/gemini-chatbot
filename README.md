@@ -1,5 +1,7 @@
 # 🤖 Gemini 2.0: RAG-Powered Chatbot
 
+🚀 [Live App](https://gemini-chatbot-ah6paoheh5n4z3k96zgudu.streamlit.app)
+
 A dynamic, multi-chat **Streamlit chatbot** powered by **Google Gemini 2.0 Flash**, enhanced with **RAG (Retrieval-Augmented Generation)** using **LangGraph**, **LangChain**, and **FAISS**.
 
 ---
@@ -13,7 +15,7 @@ A dynamic, multi-chat **Streamlit chatbot** powered by **Google Gemini 2.0 Flash
 - 💬 **Streaming Chat Interface** with memory
 - 🗂️ **Multi-Chat Sidebar**: Switch between sessions
 - 🔄 **Reset Chat** while retaining context
-- 📥 **Download Conversation** as `.txt` file
+- 📅 **Download Conversation** as `.txt` file
 - 📌 Smart handling of file re-upload & persistence per chat session
 
 ---
@@ -70,7 +72,6 @@ LANGSMITH_API_KEY = "your_langsmith_key"
 
 ```bash
 streamlit run streamlit_chat.py
-
 ```
 
 ## 📚 RAG Workflow
@@ -109,6 +110,3 @@ streamlit run streamlit_chat.py
 
 **Sajid Ali**  
 *Data Scientist | GitHub*
-
-
-

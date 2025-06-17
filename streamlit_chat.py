@@ -1,4 +1,4 @@
-# ✅ streamlit_chat.py (UPDATED with Streaming + Markdown Fix)
+# ✅ streamlit_chat.py (UPDATED with Stable Multi-format RAG + Reliable Upload Handling)
 
 import uuid
 import os
@@ -6,24 +6,29 @@ import streamlit as st
 from app.utils import stream_chat
 import base64
 from PyPDF2 import PdfReader
+import docx
+import pandas as pd
+from io import StringIO
+import hashlib
+import time
+
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import FAISS
 import streamlit.components.v1 as components
-import time
 
 # === 1. Set API Keys ===
 os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 os.environ["LANGSMITH_API_KEY"] = st.secrets["LANGSMITH_API_KEY"]
 
 # === 2. Streamlit UI Setup ===
-st.set_page_config(page_title="My Gemini Chatbot", layout="wide")
+st.set_page_config(page_title="Gemini Chatbot", layout="wide")
 st.markdown("""
     <h1 style='text-align: center;'>🤖 Gemini 2.0: RAG-Powered Chatbot</h1>
     <p style='text-align: center;'>Hi, how can I help you today?</p>
 """, unsafe_allow_html=True)
 
-# === 3. Initialize Storage for All Chats ===
+# === 3. Session Initialization ===
 if "all_chats" not in st.session_state:
     st.session_state.all_chats = {}
 
@@ -35,7 +40,7 @@ if "active_chat_id" not in st.session_state:
         "history": [],
         "use_doc_context": False,
         "vectorstore": None,
-        "last_file_name": None
+        "last_file_hash": None
     }
 
 chat_id = st.session_state.active_chat_id
@@ -62,52 +67,73 @@ if st.sidebar.button("➕ New Chat"):
         "history": [],
         "use_doc_context": False,
         "vectorstore": None,
-        "last_file_name": None
+        "last_file_hash": None
     }
     st.session_state.active_chat_id = new_id
-    st.session_state.pop("uploaded_file", None)
     st.rerun()
 
-# === 5. PDF Upload & Embedding (Sidebar) ===
-st.sidebar.subheader("📄 Upload a PDF")
-uploaded_file = st.sidebar.file_uploader("Choose a PDF file", type="pdf")
+## === 5. Document Upload & Embedding ===
+def get_file_hash(file_obj):
+    content = file_obj.read()
+    file_obj.seek(0)
+    return hashlib.md5(content).hexdigest()
+
+st.sidebar.subheader("📄 Upload a Document")
+uploaded_file = st.sidebar.file_uploader("Choose a file", type=["pdf", "txt", "docx", "csv"])
 
 if uploaded_file:
-    current_file_name = uploaded_file.name
+    current_file_hash = get_file_hash(uploaded_file)
 
-    if chat_data.get("last_file_name") != current_file_name:
-        reader = PdfReader(uploaded_file)
-        raw_text = "\n".join([page.extract_text() or "" for page in reader.pages])
+    if chat_data.get("last_file_hash") != current_file_hash:
+        file_extension = uploaded_file.name.split(".")[-1].lower()
+        uploaded_file.seek(0)
+
+        if file_extension == "pdf":
+            reader = PdfReader(uploaded_file)
+            raw_text = "\n".join([page.extract_text() or "" for page in reader.pages])
+
+        elif file_extension == "txt":
+            raw_text = uploaded_file.read().decode("utf-8")
+
+        elif file_extension == "docx":
+            doc = docx.Document(uploaded_file)
+            raw_text = "\n".join([para.text for para in doc.paragraphs])
+
+        elif file_extension == "csv":
+            df = pd.read_csv(StringIO(uploaded_file.read().decode("utf-8")))
+            raw_text = df.to_string(index=False)
+
+        else:
+            raw_text = ""
 
         splitter = RecursiveCharacterTextSplitter(chunk_size=750, chunk_overlap=100)
         chunks = splitter.split_text(raw_text)
-
         embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
         vectorstore = FAISS.from_texts(chunks, embedding=embeddings)
 
         chat_data["use_doc_context"] = True
         chat_data["vectorstore"] = vectorstore
-        chat_data["last_file_name"] = current_file_name
+        chat_data["last_file_hash"] = current_file_hash
 
-        st.sidebar.success("✅ PDF uploaded & embedded")
+        st.sidebar.success(f"✅ {file_extension.upper()} file uploaded & embedded")
     else:
-        st.sidebar.info("ℹ️ Same PDF already loaded. Skipping embedding.")
+        st.sidebar.info("ℹ️ Same file already loaded. Skipping embedding.")
 
-# === 6. Persona & Language ===
+# === 7. Persona & Language ===
 persona = st.selectbox("Choose a persona:", ["Friendly Assistant", "Formal Expert", "Tech Support"], key="persona")
 language = st.selectbox("Choose language:", ["English", "Urdu"], key="language")
 
-# === 7. Reset Conversation ===
+# === 8. Reset Conversation ===
 if st.button("🔄 Reset Conversation"):
     chat_data["history"] = []
     st.rerun()
 
-# === 8. Display Chat History ===
+# === 9. Display Chat History ===
 for sender, message in chat_data["history"]:
     with st.chat_message("user" if sender == "user" else "assistant"):
         st.markdown(message)
 
-# === 9. Input Area ===
+# === 10. Input Area ===
 user_input = st.chat_input("Type your message here...")
 
 if user_input:
@@ -142,7 +168,7 @@ if user_input:
         response_placeholder.markdown(displayed.strip())
         chat_data["history"].append(("ai", displayed.strip()))
 
-# === 10. Floating Download Button ===
+# === 11. Download Button ===
 conversation_text = "\n\n".join([
     f"{'You' if role == 'user' else 'AI'}: {message}"
     for role, message in chat_data["history"]

@@ -14,7 +14,7 @@ A dynamic, multi-chat **Streamlit chatbot** powered by **Google Gemini 2.0 Flash
 
 ## 🚀 Features
 
-- 📄 **Upload PDF Documents** for contextual Q&A
+- 📄 - 📄 **Upload Documents** (`.pdf`, `.docx`, `.txt`, `.csv`) for contextual Q&A
 - 🧠 **RAG** with embedded document chunks via FAISS vector store
 - 🧑‍🎤 **Persona Selector** (Friendly Assistant, Formal Expert, Tech Support)
 - 🌐 **Language Selector** (English, Urdu)

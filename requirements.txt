@@ -9,4 +9,4 @@ langchain-community
 faiss-cpu
 python-docx
 pandas
-hashlib 
+ 

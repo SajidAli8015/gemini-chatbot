@@ -110,7 +110,6 @@ if uploaded_file:
         chunks = splitter.split_text(raw_text)
         embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
         vectorstore = FAISS.from_texts(chunks, embedding=embeddings)
-
         chat_data["use_doc_context"] = True
         chat_data["vectorstore"] = vectorstore
         chat_data["last_file_hash"] = current_file_hash
